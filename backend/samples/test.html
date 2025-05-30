@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Vapi Voice Widget Example</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <style>
+      .vapi-btn {
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        font-family: "Segoe UI", Arial, sans-serif;
+      }
+      .vapi-btn-is-idle {
+        border: 2px solid #5dfeaa;
+      }
+      .vapi-btn-is-active {
+        border: 2px solid #ff0000;
+      }
+      .vapi-btn-is-loading {
+        border: 2px solid #5d7cca;
+      }
+      .vapi-btn-pill {
+        border-radius: 999px;
+      }
+      .vapi-btn-round {
+        border-radius: 50%;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Your website content here -->
+
+    <script>
+      var vapiInstance = null;
+
+      // Assistant configuration (inline object)
+      const assistant = {
+        model: {
+          provider: "openai",
+          model: "gpt-3.5-turbo",
+          systemPrompt:
+            "You're a versatile AI assistant named Vapi who is fun to talk with.",
+        },
+        voice: {
+          provider: "11labs",
+          voiceId: "paula",
+        },
+        firstMessage: "Hi, I am Ron, how can i assist you today?",
+      };
+
+      // Button configuration
+      const buttonConfig = {
+        position: "center",
+        offset: "40px",
+        width: "50px",
+        height: "50px",
+        idle: {
+          color: "rgb(93, 254, 202)",
+          type: "pill",
+          title: "Have a quick question?",
+          subtitle: "Talk with our AI assistant",
+          icon: "https://unpkg.com/lucide-static@0.321.0/icons/phone.svg",
+        },
+        loading: {
+          color: "rgb(93, 124, 202)",
+          type: "pill",
+          title: "Connecting...",
+          subtitle: "Please wait",
+          icon: "https://unpkg.com/lucide-static@0.321.0/icons/loader-2.svg",
+        },
+        active: {
+          color: "rgb(255, 0, 0)",
+          type: "pill",
+          title: "Call is in progress...",
+          subtitle: "End the call.",
+          icon: "https://unpkg.com/lucide-static@0.321.0/icons/phone-off.svg",
+        },
+      };
+
+      // Replace with your actual public API key from Vapi Dashboard
+      const apiKey = "9a8e7a4f-d0f0-4793-aa13-aa5949c7a53e";
+
+      (function (d, t) {
+        var g = document.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+        g.src =
+          "https://cdn.jsdelivr.net/gh/VapiAI/html-script-tag@latest/dist/assets/index.js";
+        g.defer = true;
+        g.async = true;
+        s.parentNode.insertBefore(g, s);
+
+        g.onload = function () {
+          vapiInstance = window.vapiSDK.run({
+            apiKey: apiKey, // mandatory
+            assistant: assistant, // mandatory (object or assistantId string)
+            config: buttonConfig, // optional
+          });
+
+          // Example event listeners
+          vapiInstance.on("speech-start", () => {
+            console.log("Speech has started");
+          });
+
+          vapiInstance.on("speech-end", () => {
+            console.log("Speech has ended");
+          });
+
+          vapiInstance.on("call-start", () => {
+            console.log("Call has started");
+          });
+
+          vapiInstance.on("call-end", () => {
+            console.log("Call has stopped");
+          });
+
+          vapiInstance.on("volume-level", (volume) => {
+            console.log(`Assistant volume level: ${volume}`);
+          });
+
+          vapiInstance.on("message", (message) => {
+            console.log("Message from assistant:", message);
+          });
+
+          vapiInstance.on("error", (e) => {
+            console.error("Vapi Error:", e);
+          });
+        };
+      })(document, "script");
+    </script>
+  </body>
+</html>
